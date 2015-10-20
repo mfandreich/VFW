@@ -16,6 +16,8 @@ namespace Vexe.Editor.GUIs {
             if (Event.current.type == EventType.Repaint && _areaRect.width != realStart.width && realStart.width >= 1f)
             {
                 _areaRect.width = realStart.width;
+				_areaRect.x = realStart.x;
+				_areaRect.y = realStart.y;
                 gui.RequestLayout();
                 EditorHelper.RepaintAllInspectors();
             }

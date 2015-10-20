@@ -107,7 +107,7 @@ namespace Vexe.Editor.Editors
         /// </summary>
         private static readonly Type[] DrawnByUnityTypes = new Type[]
         {
-            typeof(UnityEngine.Events.UnityEventBase)
+            //typeof(UnityEngine.Events.UnityEventBase)
         };
 
         protected bool foldout

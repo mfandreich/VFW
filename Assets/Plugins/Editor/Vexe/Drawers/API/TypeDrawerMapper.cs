@@ -151,7 +151,7 @@ namespace Vexe.Editor
                         .Add<ParagraphAttribute, ParagraphDrawer>()
                         .Add<ButtonAttribute, ButtonDrawer>()
                         .Add<ResourcePathAttribute, ResourcePathDrawer>()
-                        .Add<BetterUnityAttribute,BetterUnityDrawer>();
+                        .Add<BetterDrawByUnityAttribute,BetterUnityDrawer>();
                 }
                 // Popups
                 {

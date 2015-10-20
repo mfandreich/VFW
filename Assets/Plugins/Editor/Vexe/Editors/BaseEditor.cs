@@ -254,7 +254,7 @@ namespace Vexe.Editor.Editors
             _visibleMembers = VisibilityLogic.CachedGetVisibleMembers(targetType);
 
             var drawnByUnity = _visibleMembers
-                .Where(x => x.IsDefined<DrawByUnityAttribute>() || DrawnByUnityTypes.Any(x.GetDataType().IsA));
+                .Where(x => (x.IsDefined<DrawByUnityAttribute>() || DrawnByUnityTypes.Any(x.GetDataType().IsA)) && !x.IsDefined<BetterDrawByUnityAttribute>());
 
             _visibleMembers = _visibleMembers.Except(drawnByUnity).ToList();
 

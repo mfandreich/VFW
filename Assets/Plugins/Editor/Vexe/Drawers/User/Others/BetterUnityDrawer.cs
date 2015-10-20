@@ -1,81 +1,48 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 using Vexe.Editor.GUIs;
 using Vexe.Editor.Helpers;
 using Vexe.Runtime.Types;
 
 namespace Vexe.Editor.Drawers {
-    public class BetterUnityDrawer :AttributeDrawer<object, BetterUnityAttribute> {
+    public class BetterUnityDrawer :AttributeDrawer<object, BetterDrawByUnityAttribute> {
         private float _lastHeight;
         private bool _isPressed;
         private bool _foldout;
+        private SerializedObject _serializedObject;
 
         public override void OnGUI() {
-//            using (gui.Vertical()) {
-//                using (gui.Indent(10f)) {
-//                    _foldout = gui.CustomFoldout("Bingo!", _foldout,Layout.sFit());
-//                    if (_foldout) {
-//                        using (gui.Indent(8f)) {
-//                            gui.Box("", GUIStyles.None, Layout.sHeight(_lastHeight));
-//                            Rect boxRect = gui.LastRect;
-//                            Rect hiddenRect;
-//                            GUILayout.BeginArea(boxRect);
-//                            {
-//                                GUILayout.Label("Start");
-//                                if (GUILayout.Button("Press me"))
-//                                {
-//                                    _isPressed = !_isPressed;
-//                                }
-//                                if (_isPressed)
-//                                {
-//                                    GUILayout.Label("This");
-//                                    GUILayout.Label("is");
-//                                    GUILayout.Label("inner");
-//                                    GUILayout.Label("stuff");
-//                                    GUILayout.Label("!!!");
-//                                }
-//                                GUILayout.Label("End");
-//                                GUILayout.Label("");
-//                                hiddenRect = GUILayoutUtility.GetLastRect();
-//                            }
-//                            GUILayout.EndArea();
-//
-//                            if (Event.current.type == EventType.Repaint)
-//                            {
-//                                if (_lastHeight != hiddenRect.y)
-//                                {
-//                                    _lastHeight = hiddenRect.y;
-//                                    gui.RequestResetIfRabbit();
-//                                    EditorHelper.RepaintAllInspectors();
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-            using (VerticalBlock.instance = gui.Vertical()) {
-                
-            }
-            using (gui.Turtle(GUIStyles.Box)) {
-                    //Debug.Log("start elements");
-                    GUILayout.Label("Start");
-                    if (GUILayout.Button("Press me")) {
-                        _isPressed = !_isPressed;
-                    }
-                    if (_isPressed) {
-                        GUILayout.Label("This");
-                        GUILayout.Label("is");
-                        GUILayout.Label("inner");
-                        GUILayout.Label("stuff");
-                        GUILayout.Label("!!!");
-                    }
-                    GUILayout.Label("End");
-                    //Debug.Log("end elements");
-                    //if (Event.current.type == EventType.Repaint) {
-                    //    gui.RequestResetIfRabbit();
-                    //    EditorHelper.RepaintAllInspectors();
-                    //}
+            if (member.UnityTarget) {
+                if (_serializedObject == null) {
+                    _serializedObject = new SerializedObject(member.UnityTarget);
                 }
-            
+                if (_serializedObject != null) {
+                    using (gui.Turtle()){
+                        SerializedProperty property = _serializedObject.FindProperty(member.Name);
+                        if (property == null) {
+                            EditorGUILayout.HelpBox("Member cannot be drawn by Unity: " + member.Name,
+                                MessageType.Warning);
+                        }
+                        else {
+                            EditorGUI.BeginChangeCheck();
+                            EditorGUILayout.PropertyField(property, true);
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                _serializedObject.ApplyModifiedProperties();
+                                var bb = member.UnityTarget as BetterBehaviour;
+                                if (bb != null)
+                                    bb.DelayNextDeserialize();
+                                else
+                                {
+                                    var bso = member.UnityTarget as BetterScriptableObject;
+                                    if (bso != null)
+                                        bso.DelayNextDeserialize();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

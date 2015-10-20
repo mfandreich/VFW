@@ -392,8 +392,13 @@ namespace Vexe.Editor.GUIs
 
         private void EndBlock()
         {
-            if (!_pendingReset)
-                _blockStack.Pop();
+            if (!_pendingReset) {
+                GUIBlock block = _blockStack.Pop();
+                if (block.GetType() == typeof (TurtleBlock)) {
+                    _blockStack.Pop();
+                }
+            }
+                
         }
 
         private bool CanDrawControl(out Rect position, ControlData data)
@@ -796,10 +801,16 @@ namespace Vexe.Editor.GUIs
         }
 
         protected override TurtleBlock BeginTurtle(GUIStyle style) {
-            TurtleBlock turtleBlock = BeginBlock<TurtleBlock>(style);
+            //this trick needed for correct resize detection inside turtle, maybe I can found better solution. (mf_andreich)
+            BeginBlock<VerticalBlock>(style);
+            Box("", GUIStyles.None,Layout.sHeight(10f));
+            Rect realStart = LastRect;
+            TurtleBlock turtleBlock = BeginBlock<TurtleBlock>(GUIStyles.None);
             if (turtleBlock != null) {
-                if (turtleBlock.gui == null)
-                {
+                if (Event.current.type == EventType.Repaint) {
+                    turtleBlock.realStart = realStart;
+                }
+                if (turtleBlock.gui == null){
                     turtleBlock.gui = this;
                 }
                 turtleBlock.Start();

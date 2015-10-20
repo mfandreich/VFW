@@ -3,11 +3,8 @@ using UnityEngine;
 namespace Vexe.Editor.GUIs
 {
 	public class VerticalBlock : GUIBlock {
-	    public static VerticalBlock instance;
 		public override void Layout(Rect start)
 		{
-            if(instance == this)
-            Debug.Log("v in " + start);
             int nControls = controls.Count;
 			if (nControls == 0)
             { 

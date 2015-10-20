@@ -8,46 +8,48 @@ namespace Vexe.Editor.GUIs {
         
         public Vector2 startCorrection;
         private Rect _areaRect;
+        public Rect realStart;
         public RabbitGUI gui;
 
         public void Start() {
             //Debug.Log("start block " + _areaRect + " " + width + " " + height + " " + blockMargin);
+            if (Event.current.type == EventType.Repaint && _areaRect.width != realStart.width && realStart.width >= 1f)
+            {
+                _areaRect.width = realStart.width;
+                gui.RequestLayout();
+                EditorHelper.RepaintAllInspectors();
+            }
             if (gui != null) {
-                GUI.BeginGroup(_areaRect);
-                Rect inGroup = _areaRect;
-                inGroup.x = 0f;
-                inGroup.y = 0f;
-                GUILayout.BeginArea(inGroup);
+                GUILayout.BeginArea(_areaRect);
+                GUILayout.BeginVertical(GUILayout.Width((_areaRect.width)));
             }
         }
 
         public override void Layout(Rect start) {
-            Debug.Log("t in " + start);
-            RectOffset blockMargin = data.style.margin;
+            
             int nControls = controls.Count;
             if (nControls > 0)
                 throw new Exception("Using RabbitGUI inside TurtleBlock not supported.");
-            _areaRect.width = start.width;
-            _areaRect.x     = start.x;
-            _areaRect.y     = start.y;
+            _areaRect.width = realStart.width;
+            _areaRect.x     = realStart.x;
+            _areaRect.y     = realStart.y;
 
             x = start.x;
             y = start.y;
-            width  = _areaRect.width;// = _areaRect.width + blockMargin.right;
-            height = _areaRect.height;// = _areaRect.height + blockMargin.bottom;
-            Debug.Log("out " + _areaRect);
-            Debug.Log("out " + width);
+            width  = _areaRect.width;
+            height = _areaRect.height;
         }
 
         public override void Dispose() {
             if (gui != null) {
                 GUILayout.Label("hidden");
                 Rect tempRect = GUILayoutUtility.GetLastRect();
+                GUILayout.EndVertical();
                 GUILayout.EndArea();
-                GUI.EndGroup();
                 if (Event.current.type == EventType.Repaint && _areaRect.height != tempRect.y) {
                     _areaRect.height = tempRect.y;
                     gui.RequestLayout();
+                    EditorHelper.RepaintAllInspectors();
                 }
             }
             base.Dispose();

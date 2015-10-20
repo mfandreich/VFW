@@ -150,7 +150,8 @@ namespace Vexe.Editor
                         .Add<vSliderAttribute, vSliderDrawer>()
                         .Add<ParagraphAttribute, ParagraphDrawer>()
                         .Add<ButtonAttribute, ButtonDrawer>()
-                        .Add<ResourcePathAttribute, ResourcePathDrawer>();
+                        .Add<ResourcePathAttribute, ResourcePathDrawer>()
+                        .Add<BetterUnityAttribute,BetterUnityDrawer>();
                 }
                 // Popups
                 {

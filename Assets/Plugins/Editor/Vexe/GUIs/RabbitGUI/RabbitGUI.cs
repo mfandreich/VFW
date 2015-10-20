@@ -256,16 +256,20 @@ namespace Vexe.Editor.GUIs
             {
                 if (_pendingReset || _nextControlIdx != _controls.Count || _nextBlockIdx != _blocks.Count)
                 {
-                    #if dbg_level_1
-                    if (_pendingReset)
-                        Debug.Log("Resetting - Theres a reset request pending");
-                    else Debug.Log("Resetting -  The number of controls/blocks drawn doesn't match the total number of controls/blocks");
-                    #endif
-                    _controls.Clear();
-                    _blocks.Clear();
-                    _allocatedMemory = false;
-                    _pendingRepaint = true;
-                    _currentPhase = GUIPhase.Layout;
+                    //fix blinking problem! its very nice, we can do dynamic layouts! woooohooooo!!!!! =)
+                    if (Event.current.type != EventType.Layout) {
+                        #if dbg_level_1
+                        if (_pendingReset)
+                            Debug.Log("Resetting - Theres a reset request pending");
+                        else Debug.Log("Resetting -  The number of controls/blocks drawn doesn't match the total number of controls/blocks");
+                        #endif
+                        _controls.Clear();
+                        _blocks.Clear();
+                        _allocatedMemory = false;
+                        _pendingRepaint = true;
+                        _currentPhase = GUIPhase.Layout;
+                    }
+                    
                 }
                 else if (_pendingLayout)
                 {
@@ -791,12 +795,29 @@ namespace Vexe.Editor.GUIs
             return BeginBlock<VerticalBlock>(style);
         }
 
+        protected override TurtleBlock BeginTurtle(GUIStyle style) {
+            TurtleBlock turtleBlock = BeginBlock<TurtleBlock>(style);
+            if (turtleBlock != null) {
+                if (turtleBlock.gui == null)
+                {
+                    turtleBlock.gui = this;
+                }
+                turtleBlock.Start();
+            }
+            return turtleBlock;
+        }
+
         protected override void EndHorizontal()
         {
             EndBlock();
         }
 
         protected override void EndVertical()
+        {
+            EndBlock();
+        }
+
+        protected override void EndTurtle()
         {
             EndBlock();
         }

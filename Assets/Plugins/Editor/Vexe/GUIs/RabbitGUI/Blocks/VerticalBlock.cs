@@ -2,11 +2,13 @@ using UnityEngine;
 
 namespace Vexe.Editor.GUIs
 {
-	public class VerticalBlock : GUIBlock
-	{
+	public class VerticalBlock : GUIBlock {
+	    public static VerticalBlock instance;
 		public override void Layout(Rect start)
 		{
-			int nControls = controls.Count;
+            if(instance == this)
+            Debug.Log("v in " + start);
+            int nControls = controls.Count;
 			if (nControls == 0)
             { 
                 width = height = 0;
@@ -50,7 +52,7 @@ namespace Vexe.Editor.GUIs
 
 			height = totalHeight + blockMargin.bottom;
 			width  = totalWidth + blockMargin.right;
-		}
+        }
 
 		public override Layout Space(float pxl)
 		{

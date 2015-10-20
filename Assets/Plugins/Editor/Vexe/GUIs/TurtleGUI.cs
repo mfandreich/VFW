@@ -11,6 +11,7 @@ namespace Vexe.Editor.GUIs
     {
         private static HorizontalBlock horizontal;
         private static VerticalBlock vertical;
+        private static TurtleBlock turtle;
 
 		private static MethodInfo gradientFieldMethod;
 
@@ -159,7 +160,8 @@ namespace Vexe.Editor.GUIs
         {
             horizontal = new HorizontalBlock();
             vertical = new VerticalBlock();
-			Type tyEditorGUILayout = typeof(EditorGUILayout);
+            turtle = new TurtleBlock();
+ 			Type tyEditorGUILayout = typeof(EditorGUILayout);
 			gradientFieldMethod = tyEditorGUILayout.GetMethod("GradientField", BindingFlags.NonPublic | BindingFlags.Static, null, new Type[] { typeof(GUIContent), typeof(Gradient), typeof(GUILayoutOption[]) }, null);
 		}
 
@@ -181,12 +183,22 @@ namespace Vexe.Editor.GUIs
             return vertical;
         }
 
+        protected override TurtleBlock BeginTurtle(GUIStyle style) {
+            GUILayout.BeginVertical(style);
+            return turtle;
+        }
+
         protected override void EndHorizontal()
         {
             GUILayout.EndHorizontal();
         }
 
         protected override void EndVertical()
+        {
+            GUILayout.EndVertical();
+        }
+
+        protected override void EndTurtle()
         {
             GUILayout.EndVertical();
         }

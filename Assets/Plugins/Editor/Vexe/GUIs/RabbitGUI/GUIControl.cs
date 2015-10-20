@@ -50,7 +50,7 @@ namespace Vexe.Editor.GUIs
 		public virtual void ResetDimensions()
 		{
 			var option = data.option;
-
+            
 			if (option != null)
 			{
 				if (data.type == BaseGUI.ControlType.PrefixLabel)
@@ -66,7 +66,7 @@ namespace Vexe.Editor.GUIs
 			}
 			else
 			{
-				width  = null;
+			    width = null;
 				height = BaseGUI.GetHeight(data.type);
 			}
 		}

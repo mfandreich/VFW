@@ -72,11 +72,23 @@ namespace Vexe.Editor.GUIs
 			return BeginHorizontal(style);
 		}
 
-		protected abstract HorizontalBlock BeginHorizontal(GUIStyle style);
+        public TurtleBlock Turtle()
+        {
+            return Turtle(GUIStyle.none);
+        }
+
+        public TurtleBlock Turtle(GUIStyle style)
+        {
+            return BeginTurtle(style);
+        }
+
+        protected abstract HorizontalBlock BeginHorizontal(GUIStyle style);
 		protected abstract VerticalBlock BeginVertical(GUIStyle style);
+	    protected abstract TurtleBlock BeginTurtle(GUIStyle style);
 		protected abstract void EndHorizontal();
 		protected abstract void EndVertical();
-		public abstract void OnGUI(Action guiCode, Vector4 padding, int targetId);
+        protected abstract void EndTurtle();
+        public abstract void OnGUI(Action guiCode, Vector4 padding, int targetId);
 
         public virtual void OnEnable() { }
         public virtual void OnDisable() { }
@@ -251,6 +263,7 @@ namespace Vexe.Editor.GUIs
             FlexibleSpace,
             HorizontalBlock,
             VerticalBlock,
+            TurtleBlock,
             MiniButton,
             Vector3Field,
             Toggle,

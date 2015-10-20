@@ -9,7 +9,7 @@ namespace Vexe.Editor.GUIs
 		public List<GUIControl> controls;
 		public Action onDisposed;
 
-		public int nBlocksWithin { get; private set; }
+        public int nBlocksWithin { get; private set; }
 
 		public GUIBlock()
 		{
@@ -22,7 +22,7 @@ namespace Vexe.Editor.GUIs
 			controls.Add(block);
 		}
 
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			onDisposed();
 		}

@@ -17,9 +17,9 @@ namespace Vexe.Editor.Drawers {
                     _serializedObject = new SerializedObject(member.UnityTarget);
                 }
                 if (_serializedObject != null) {
-					gui.Label(member.RawTarget.GetType().Name);
-					gui.Label(member.Info.Name);
-                    /*using (gui.Turtle()){
+					//gui.Label(member.RawTarget.GetType().Name);
+					//gui.Label(member.Info.Name);
+                    using (gui.Turtle(GUIStyles.None)){
                         SerializedProperty property = _serializedObject.FindProperty(member.Name);
                         if (property == null) {
                             EditorGUILayout.HelpBox("Member cannot be drawn by Unity: " + member.Name,
@@ -42,7 +42,7 @@ namespace Vexe.Editor.Drawers {
                                 }
                             }
                         }
-                    }*/
+                    }
                 }
             }
         }

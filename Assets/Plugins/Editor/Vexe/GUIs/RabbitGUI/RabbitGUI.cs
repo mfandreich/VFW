@@ -255,8 +255,7 @@ namespace Vexe.Editor.GUIs
             else
             {
                 if (_pendingReset || _nextControlIdx != _controls.Count || _nextBlockIdx != _blocks.Count)
-                {
-                    //fix blinking problem! its very nice, we can do dynamic layouts! woooohooooo!!!!! =)
+                {                    
                     if (Event.current.type != EventType.Layout) {
                         #if dbg_level_1
                         if (_pendingReset)
@@ -273,25 +272,44 @@ namespace Vexe.Editor.GUIs
                 }
                 else if (_pendingLayout)
                 {
-                    #if dbg_level_1
-                        Debug.Log("Pending layout request. Doing layout in next phase");
-                    #endif
-                    _currentPhase = GUIPhase.Layout;
-                    EditorHelper.RepaintAllInspectors();
+					if (Event.current.type != EventType.Layout){
+		                #if dbg_level_1
+		                    Debug.Log("Pending layout request. Doing layout in next phase");
+		                #endif
+		                _currentPhase = GUIPhase.Layout;
+		                EditorHelper.RepaintAllInspectors();
+					}
                 }
                 else {
-                    bool resized = _prevInspectorWidth != EditorGUIUtility.currentViewWidth + _widthCorrection;
-                    if (resized)
-                    {
-                        #if dbg_level_1
-                            Debug.Log("Resized inspector. Doing layout in next phase");
-                        #endif
-                        _prevInspectorWidth = EditorGUIUtility.currentViewWidth + _widthCorrection;
-                        _currentPhase = GUIPhase.Layout;
-                    }
+					if (Event.current.type != EventType.Layout){
+	                    bool resized = _prevInspectorWidth != EditorGUIUtility.currentViewWidth + _widthCorrection;
+	                    if (resized)
+	                    {
+	                        #if dbg_level_1
+	                            Debug.Log("Resized inspector. Doing layout in next phase");
+	                        #endif
+	                        _prevInspectorWidth = EditorGUIUtility.currentViewWidth + _widthCorrection;
+	                        _currentPhase = GUIPhase.Layout;
+	                    }
+					}
                 }
             }
         }
+
+
+		//Just get next block without instanciating and increasing of indexes
+		private T GetNextBlock<T> () where T : GUIBlock, new(){
+			if (_pendingReset ||
+			    (_allocatedMemory && _nextBlockIdx >= _blocks.Count) ||
+			    !_allocatedMemory)
+			{
+				#if dbg_level_1
+				Debug.Log("Can't get block of type: " + typeof(T).Name);
+				#endif
+				return null;
+			}
+			return _blocks[_nextBlockIdx] as T;
+		}
 
         private T BeginBlock<T>(GUIStyle style) where T : GUIBlock, new()
         {
@@ -428,6 +446,13 @@ namespace Vexe.Editor.GUIs
                 NewControl(data);
                 return false;
             }
+
+			//Add refresh layout data when layout =)
+			if(_pendingLayout){
+				if(_controls[_nextControlIdx] != null && _controls[_nextControlIdx].data.option != data.option){
+					_controls[_nextControlIdx].data.option = data.option;				
+				}
+			}
 
             position = _controls[_nextControlIdx++].rect;
             return true;
@@ -803,12 +828,19 @@ namespace Vexe.Editor.GUIs
         protected override TurtleBlock BeginTurtle(GUIStyle style) {
             //this trick needed for correct resize detection inside turtle, maybe I can found better solution. (mf_andreich)
             BeginBlock<VerticalBlock>(style);
-            Box("", GUIStyles.None,Layout.sHeight(10f));
-            Rect realStart = LastRect;
-            TurtleBlock turtleBlock = BeginBlock<TurtleBlock>(GUIStyles.None);
+			TurtleBlock turtleBlock = GetNextBlock<TurtleBlock>();
+			float realHeight = (turtleBlock == null? 0f:turtleBlock.RealHeight);
+			float realWidth = (turtleBlock == null? 0f:turtleBlock.RealWidth);
+			Box("", GUIStyles.None,Layout.sHeight(realHeight));
+            Rect realArea = LastRect;
+			if(realArea.height != realHeight || realArea.width != realWidth){
+				RequestLayout();
+				EditorHelper.RepaintAllInspectors();
+			}
+            turtleBlock = BeginBlock<TurtleBlock>(GUIStyles.None);
             if (turtleBlock != null) {
                 if (Event.current.type == EventType.Repaint) {
-                    turtleBlock.realStart = realStart;
+					turtleBlock.AreaRect = realArea;
                 }
                 if (turtleBlock.gui == null){
                     turtleBlock.gui = this;
